@@ -6,7 +6,7 @@
 
 | Слой | Технологии |
 |------|------------|
-| Framework | Nuxt 3, Vue 3 (Composition API), TypeScript (strict) |
+| Framework | Nuxt 3 (SPA, `ssr: false`), Vue 3 Composition API, TypeScript strict |
 | Состояние | Pinia |
 | Стили | SCSS (переменные, миксины), адаптивная вёрстка |
 | Тесты | Vitest, `@vue/test-utils`, happy-dom |
