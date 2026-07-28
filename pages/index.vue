@@ -1,5 +1,10 @@
 <script setup lang="ts">
+/**
+ * Список заметок: создание / удаление через history.commit,
+ * переход в сессию редактирования (`/edit/:id`).
+ */
 import { NOTE_SCHEMA_VERSION, type Note } from '~/types/note'
+import { displayNoteTitle } from '~/utils/note-validation'
 
 useHead({
   title: 'Заметки',
@@ -11,11 +16,8 @@ const { commit } = useHistory()
 const isDeleteOpen = ref(false)
 const notePendingDelete = ref<Note | null>(null)
 
-const sortedNotes = computed(() =>
-  [...notesStore.notes].sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-  ),
-)
+/** Мемоизированный sortedNotes живёт в сторе. */
+const { sortedNotes, notesCount } = storeToRefs(notesStore)
 
 const deleteMessage = computed(() => {
   const note = notePendingDelete.value
@@ -23,8 +25,7 @@ const deleteMessage = computed(() => {
     return ''
   }
 
-  const title = note.title.trim() || 'Без названия'
-  return `Заметка «${title}» будет удалена безвозвратно.`
+  return `Заметка «${displayNoteTitle(note.title)}» будет удалена безвозвратно.`
 })
 
 function cloneNote(note: Note): Note {
@@ -81,6 +82,7 @@ function confirmDelete(): void {
   const index = notesStore.notes.findIndex(item => item.id === note.id)
   if (index === -1) {
     notePendingDelete.value = null
+    isDeleteOpen.value = false
     return
   }
 
@@ -91,10 +93,12 @@ function confirmDelete(): void {
   })
 
   notePendingDelete.value = null
+  isDeleteOpen.value = false
 }
 
 function cancelDelete(): void {
   notePendingDelete.value = null
+  isDeleteOpen.value = false
 }
 </script>
 
@@ -109,7 +113,7 @@ function cancelDelete(): void {
           Заметки
         </h1>
         <p class="notes__subtitle">
-          {{ notesStore.notesCount }} шт.
+          {{ notesCount }} шт.
         </p>
       </div>
 
@@ -124,13 +128,10 @@ function cancelDelete(): void {
 
     <section
       v-if="sortedNotes.length"
-      class="notes__list"
       aria-label="Список заметок"
     >
-      <NoteListItem
-        v-for="note in sortedNotes"
-        :key="note.id"
-        :note="note"
+      <NotesVirtualList
+        :notes="sortedNotes"
         @edit="editNote"
         @delete="requestDelete"
       />
@@ -155,13 +156,16 @@ function cancelDelete(): void {
       </button>
     </section>
 
-    <ConfirmDialog
-      v-model:open="isDeleteOpen"
+    <!-- Lazy: чанк диалога грузится только при первом открытии -->
+    <LazyConfirmDialog
+      v-if="isDeleteOpen"
+      :open="true"
       title="Удалить заметку?"
       :message="deleteMessage"
       confirm-label="Удалить"
       cancel-label="Отмена"
       variant="danger"
+      @update:open="(open) => { if (!open) cancelDelete() }"
       @confirm="confirmDelete"
       @cancel="cancelDelete"
     />
@@ -226,12 +230,6 @@ function cancelDelete(): void {
       width: auto;
       flex-shrink: 0;
     }
-  }
-
-  &__list {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
   }
 
   &__empty {

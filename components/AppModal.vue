@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Базовая модалка: Teleport → body, focus-trap, Escape / оверлей.
+ * Escape и Tab слушаются на document (capture), чтобы работать
+ * даже при Lazy*-монтировании уже с open=true и фокусе снаружи.
+ */
 import { focusInitial, trapFocus } from '~/utils/focus-trap'
 
 const props = withDefaults(defineProps<{
@@ -42,8 +47,9 @@ function onOverlayClick(): void {
   }
 }
 
-function onKeydown(event: KeyboardEvent): void {
-  if (!dialogRef.value) {
+/** Глобальный keydown: Escape и focus-trap работают даже если фокус ещё снаружи. */
+function onDocumentKeydown(event: KeyboardEvent): void {
+  if (!props.open || !dialogRef.value) {
     return
   }
 
@@ -65,6 +71,19 @@ function lockBodyScroll(locked: boolean): void {
   document.body.style.overflow = locked ? 'hidden' : ''
 }
 
+function bindDocumentKeydown(bound: boolean): void {
+  if (!import.meta.client) {
+    return
+  }
+
+  if (bound) {
+    document.addEventListener('keydown', onDocumentKeydown, true)
+    return
+  }
+
+  document.removeEventListener('keydown', onDocumentKeydown, true)
+}
+
 watch(
   () => props.open,
   async (isOpen) => {
@@ -75,6 +94,7 @@ watch(
     if (isOpen) {
       previouslyFocused.value = document.activeElement as HTMLElement | null
       lockBodyScroll(true)
+      bindDocumentKeydown(true)
       await nextTick()
       if (dialogRef.value) {
         focusInitial(dialogRef.value)
@@ -82,13 +102,16 @@ watch(
       return
     }
 
+    bindDocumentKeydown(false)
     lockBodyScroll(false)
     previouslyFocused.value?.focus?.()
     previouslyFocused.value = null
   },
+  { immediate: true },
 )
 
 onUnmounted(() => {
+  bindDocumentKeydown(false)
   lockBodyScroll(false)
 })
 </script>
@@ -99,7 +122,6 @@ onUnmounted(() => {
       <div
         v-if="open"
         class="modal"
-        @keydown="onKeydown"
       >
         <div
           class="modal__overlay"

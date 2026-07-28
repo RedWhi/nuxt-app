@@ -1,10 +1,12 @@
 <script setup lang="ts">
+const draftsStore = useDraftsStore()
 </script>
 
 <template>
   <div class="app">
     <div class="app__atmosphere" aria-hidden="true" />
-    <DraftRestorePrompt />
+    <!-- Lazy: баннер грузится только если есть черновик для восстановления -->
+    <LazyDraftRestorePrompt v-if="draftsStore.showRestorePrompt" />
     <div class="app__content">
       <NuxtPage />
     </div>

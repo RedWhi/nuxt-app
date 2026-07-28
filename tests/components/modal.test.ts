@@ -36,8 +36,7 @@ describe('AppModal', () => {
 
     await nextTick()
 
-    const dialog = document.body.querySelector('.modal')!
-    dialog.dispatchEvent(new KeyboardEvent('keydown', {
+    document.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'Escape',
       bubbles: true,
       cancelable: true,
@@ -46,6 +45,34 @@ describe('AppModal', () => {
     expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
     expect(wrapper.emitted('close')).toBeTruthy()
 
+    wrapper.unmount()
+  })
+
+  it('закрывается по Escape при монтировании уже открытой (Lazy*)', async () => {
+    const wrapper = mount(AppModal, {
+      props: {
+        open: true,
+        title: 'Lazy open',
+      },
+      attachTo: document.body,
+    })
+
+    await nextTick()
+
+    // Фокус сознательно оставляем снаружи модалки
+    const outside = document.createElement('button')
+    document.body.appendChild(outside)
+    outside.focus()
+
+    document.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      cancelable: true,
+    }))
+
+    expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
+
+    outside.remove()
     wrapper.unmount()
   })
 

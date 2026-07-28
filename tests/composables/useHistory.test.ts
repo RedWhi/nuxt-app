@@ -285,6 +285,30 @@ describe('useHistory', () => {
       expect(history.canRedo.value).toBe(false)
     })
 
+    it('clear после правок имитирует конец сессии редактирования (save/cancel)', () => {
+      const history = useHistory()
+      const notes = useNotesStore()
+
+      history.commit({
+        type: 'note:create',
+        note: makeNote({ id: 'n1', title: 'A' }),
+        index: 0,
+      })
+      history.commit({
+        type: 'note:update',
+        noteId: 'n1',
+        before: { title: 'A' },
+        after: { title: 'B' },
+      })
+
+      // «Сохранить» / «Отменить» — стеки обнуляются, данные заметок не трогаем.
+      history.clear()
+
+      expect(history.canUndo.value).toBe(false)
+      expect(history.canRedo.value).toBe(false)
+      expect(notes.getNote('n1')?.title).toBe('B')
+    })
+
     it('historyStore отражает текущие стеки', () => {
       const history = useHistory()
 

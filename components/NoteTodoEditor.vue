@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Редактор todo-списка заметки.
+ * Чекбокс, добавление и удаление — отдельные атомарные записи в истории (`commit`).
+ * Текст пункта фиксируется в истории по blur (как title/content на странице edit).
+ */
 import type { TodoItem } from '~/types/note'
 import {
   EMPTY_TODO_ADD_ERROR,

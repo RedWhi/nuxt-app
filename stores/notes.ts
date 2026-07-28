@@ -1,6 +1,15 @@
+/**
+ * Pinia-стор заметок.
+ *
+ * Персистентность — ручная (без pinia-plugin-persistedstate):
+ * hydrate / scheduleSave / flushSave + utils/notes-storage.
+ * Запись в localStorage откладывается debounce'ом, чтобы не писать на каждый символ.
+ */
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { NOTE_SCHEMA_VERSION, type Note, type TodoItem } from '~/types/note'
+import { debounce } from '~/utils/debounce'
+import { sortNotesByUpdatedAt } from '~/utils/note-compare'
 import { loadNotesFromStorage, saveNotesToStorage } from '~/utils/notes-storage'
 
 /** Задержка debounced-сохранения в localStorage (мс). */
@@ -19,10 +28,14 @@ export const useNotesStore = defineStore('notes', () => {
   const isHydrated = ref(false)
   const isSaving = ref(false)
 
-  let saveTimer: ReturnType<typeof setTimeout> | null = null
+  const persist = debounce(() => {
+    saveNotesToStorage(notes.value)
+    isSaving.value = false
+  }, NOTES_SAVE_DEBOUNCE_MS)
 
   const notesCount = computed(() => notes.value.length)
 
+  /** Мемоизированный Map id → Note. */
   const noteById = computed(() => {
     const map = new Map<string, Note>()
     for (const note of notes.value) {
@@ -31,22 +44,17 @@ export const useNotesStore = defineStore('notes', () => {
     return map
   })
 
+  /** Мемоизированный список, отсортированный по дате обновления. */
+  const sortedNotes = computed(() => sortNotesByUpdatedAt(notes.value))
+
   /** Планирует отложенное сохранение (не на каждое изменение сразу). */
   function scheduleSave(): void {
     if (!import.meta.client) {
       return
     }
 
-    if (saveTimer !== null) {
-      clearTimeout(saveTimer)
-    }
-
     isSaving.value = true
-    saveTimer = setTimeout(() => {
-      saveNotesToStorage(notes.value)
-      saveTimer = null
-      isSaving.value = false
-    }, NOTES_SAVE_DEBOUNCE_MS)
+    persist()
   }
 
   /** Немедленно сохраняет текущее состояние, сбрасывая debounce. */
@@ -55,12 +63,7 @@ export const useNotesStore = defineStore('notes', () => {
       return
     }
 
-    if (saveTimer !== null) {
-      clearTimeout(saveTimer)
-      saveTimer = null
-    }
-
-    saveNotesToStorage(notes.value)
+    persist.flush()
     isSaving.value = false
   }
 
@@ -220,6 +223,7 @@ export const useNotesStore = defineStore('notes', () => {
     isSaving,
     notesCount,
     noteById,
+    sortedNotes,
     hydrate,
     syncFromStorage,
     scheduleSave,

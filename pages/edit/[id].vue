@@ -1,5 +1,14 @@
 <script setup lang="ts">
+/**
+ * Сессия редактирования заметки.
+ *
+ * - Локальные title/content → в историю по blur (не на каждый символ).
+ * - Todo — через NoteTodoEditor (атомарные commit).
+ * - Черновик пишется параллельно; при Save/Cancel — clearDraft + history.clear.
+ * - Удаление заметки в другой вкладке → диалог, без падения UI.
+ */
 import type { Note } from '~/types/note'
+import { notesContentEqual } from '~/utils/note-compare'
 import {
   displayNoteTitle,
   isBlank,
@@ -15,6 +24,7 @@ const {
   undo,
   redo,
   commit,
+  clear,
   isApplying,
 } = useHistory()
 
@@ -70,11 +80,7 @@ function syncLocalsFromNote(target: Note): void {
 }
 
 function snapshotEquals(a: Note, b: Note): boolean {
-  return (
-    a.title === b.title
-    && a.content === b.content
-    && JSON.stringify(a.todos) === JSON.stringify(b.todos)
-  )
+  return notesContentEqual(a, b)
 }
 
 const isDirty = computed(() => {
@@ -91,6 +97,7 @@ const deleteMessage = computed(() => {
 
 async function showNoteNotFound(): Promise<void> {
   draftsStore.clearDraft()
+  clear()
   await showError(
     createError({
       statusCode: 404,
@@ -98,6 +105,12 @@ async function showNoteNotFound(): Promise<void> {
       fatal: true,
     }),
   )
+}
+
+/** История живёт только в рамках текущей сессии редактирования. */
+function endEditSession(): void {
+  draftsStore.clearDraft()
+  clear()
 }
 
 watch(
@@ -119,6 +132,8 @@ watch(
       return
     }
 
+    // Новая сессия редактирования — стеки undo/redo с нуля.
+    clear()
     baseline.value = cloneNote(existing)
     syncLocalsFromNote(existing)
     draftsStore.startDraft({
@@ -145,6 +160,7 @@ watch(
       isDeleteOpen.value = false
       isRemoteDeletedOpen.value = true
       draftsStore.clearDraft()
+      clear()
     }
   },
 )
@@ -190,6 +206,7 @@ useKeyboardShortcuts({
   onRedo: handleRedo,
 })
 
+/** Фиксация заголовка в истории по blur — непрерывный ввод = одна запись. */
 function commitTitle(): void {
   if (!note.value || !noteId.value) {
     return
@@ -217,6 +234,7 @@ function commitTitle(): void {
   }
 }
 
+/** Фиксация текста заметки в истории по blur. */
 function commitContent(): void {
   if (!note.value || !noteId.value) {
     return
@@ -253,7 +271,7 @@ async function saveNote(): Promise<void> {
     return
   }
 
-  draftsStore.clearDraft()
+  endEditSession()
   baseline.value = cloneNote(note.value)
   await navigateTo('/')
 }
@@ -278,7 +296,7 @@ function requestCancel(): void {
 
 async function discardNewNote(): Promise<void> {
   if (!note.value || !noteId.value) {
-    draftsStore.clearDraft()
+    endEditSession()
     await navigateTo('/')
     return
   }
@@ -292,7 +310,7 @@ async function discardNewNote(): Promise<void> {
     })
   }
 
-  draftsStore.clearDraft()
+  endEditSession()
   await navigateTo('/')
 }
 
@@ -315,7 +333,7 @@ async function leaveWithoutSaving(): Promise<void> {
     }
   }
 
-  draftsStore.clearDraft()
+  endEditSession()
   await navigateTo('/')
 }
 
@@ -346,13 +364,13 @@ async function confirmDelete(): Promise<void> {
     index,
   })
 
-  draftsStore.clearDraft()
+  endEditSession()
   await navigateTo('/')
 }
 
 async function acknowledgeRemoteDelete(): Promise<void> {
   isRemoteDeletedOpen.value = false
-  draftsStore.clearDraft()
+  endEditSession()
   await navigateTo('/')
 }
 
@@ -453,7 +471,7 @@ function onBackClick(event: MouseEvent): void {
         </span>
       </div>
 
-      <NoteTodoEditor
+      <LazyNoteTodoEditor
         :note-id="note.id"
         :todos="note.todos"
       />
@@ -485,8 +503,9 @@ function onBackClick(event: MouseEvent): void {
       </div>
     </form>
 
-    <ConfirmDialog
-      v-model:open="isCancelOpen"
+    <LazyConfirmDialog
+      v-if="isCancelOpen"
+      :open="true"
       :title="isNewNote ? 'Отменить создание?' : 'Отменить изменения?'"
       :message="isNewNote
         ? 'Новая заметка будет удалена. Продолжить?'
@@ -494,25 +513,30 @@ function onBackClick(event: MouseEvent): void {
       :confirm-label="isNewNote ? 'Удалить черновик' : 'Сбросить'"
       cancel-label="Продолжить редактирование"
       variant="danger"
+      @update:open="(open) => { if (!open) isCancelOpen = false }"
       @confirm="leaveWithoutSaving"
     />
 
-    <ConfirmDialog
-      v-model:open="isDeleteOpen"
+    <LazyConfirmDialog
+      v-if="isDeleteOpen"
+      :open="true"
       title="Удалить заметку?"
       :message="deleteMessage"
       confirm-label="Удалить"
       cancel-label="Отмена"
       variant="danger"
+      @update:open="(open) => { if (!open) isDeleteOpen = false }"
       @confirm="confirmDelete"
     />
 
-    <AppModal
-      v-model:open="isRemoteDeletedOpen"
+    <LazyAppModal
+      v-if="isRemoteDeletedOpen"
+      :open="true"
       title="Заметка удалена"
       :close-on-overlay="false"
       :close-on-escape="false"
       role="alertdialog"
+      @update:open="(open) => { if (!open) acknowledgeRemoteDelete() }"
       @close="acknowledgeRemoteDelete"
     >
       <p>
@@ -529,7 +553,7 @@ function onBackClick(event: MouseEvent): void {
           К списку
         </button>
       </template>
-    </AppModal>
+    </LazyAppModal>
   </main>
 </template>
 

@@ -1,3 +1,7 @@
+/**
+ * Ручная синхронизация списка заметок с localStorage.
+ * Payload всегда содержит `schemaVersion` для миграций.
+ */
 import { NOTE_SCHEMA_VERSION, type Note, type TodoItem } from '~/types/note'
 
 /** Ключ хранения заметок в localStorage. */

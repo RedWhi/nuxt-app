@@ -1,3 +1,7 @@
+/**
+ * Ручное хранение черновика редактора в localStorage.
+ * Отдельный ключ от заметок — черновик не смешивается с сохранённым списком.
+ */
 import { DRAFT_SCHEMA_VERSION, type NoteDraft } from '~/types/draft'
 import type { TodoItem } from '~/types/note'
 

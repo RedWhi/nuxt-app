@@ -16,11 +16,18 @@ function createHistoryEntry(action: HistoryAction): HistoryState {
 }
 
 /**
- * Композабл undo/redo: хранит только атомарные диффы (до 50 шагов),
- * без полных копий списка заметок.
+ * Композабл undo/redo.
+ *
+ * Стеки живут в `useState` (общие на вкладку), но по требованиям ТЗ
+ * история привязана к сессии редактирования: страница edit вызывает
+ * `clear()` при сохранении, отмене и при входе в новую сессию.
+ *
+ * Храним только атомарные диффы (до HISTORY_LIMIT), без снимков всего списка.
  */
 export function useHistory() {
+  /** Стек уже применённых шагов (undo снимает с конца). */
   const past = useState<HistoryState[]>('notes-history-past', () => [])
+  /** Стек отменённых шагов (redo возвращает в past). */
   const future = useState<HistoryState[]>('notes-history-future', () => [])
   /** Флаг, чтобы store/UI не писали в историю во время undo/redo. */
   const isApplying = useState<boolean>('notes-history-applying', () => false)
@@ -98,6 +105,7 @@ export function useHistory() {
     return true
   }
 
+  /** Сброс стеков — конец сессии редактирования (save / cancel / delete). */
   function clear(): void {
     past.value = []
     future.value = []

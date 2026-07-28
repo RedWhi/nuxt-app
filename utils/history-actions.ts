@@ -1,3 +1,7 @@
+/**
+ * Чистые функции применения / инверсии атомарных шагов истории.
+ * Используются из `useHistory` — без зависимости от Vue/Pinia.
+ */
 import type { HistoryAction, NotePatch, TodoPatch } from '~/types/history'
 import type { Note, TodoItem } from '~/types/note'
 

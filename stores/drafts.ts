@@ -1,3 +1,10 @@
+/**
+ * Стор черновика редактора.
+ *
+ * Несохранённые правки переживают случайный reload: при hydrate
+ * осмысленный черновик попадает в `pendingRestore`, UI предлагает восстановить.
+ * После Save / Cancel вызывается `clearDraft()`.
+ */
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import {
@@ -5,6 +12,7 @@ import {
   type NoteDraft,
   type NoteDraftInput,
 } from '~/types/draft'
+import { debounce } from '~/utils/debounce'
 import {
   clearDraftStorage,
   isDraftMeaningful,
@@ -38,7 +46,15 @@ export const useDraftsStore = defineStore('drafts', () => {
   const isHydrated = ref(false)
   const isSaving = ref(false)
 
-  let saveTimer: ReturnType<typeof setTimeout> | null = null
+  const persist = debounce(() => {
+    if (draft.value && isDraftMeaningful(draft.value)) {
+      saveDraftToStorage(draft.value)
+    }
+    else {
+      clearDraftStorage()
+    }
+    isSaving.value = false
+  }, DRAFT_SAVE_DEBOUNCE_MS)
 
   const hasDraft = computed(() => draft.value !== null && isDraftMeaningful(draft.value))
   const showRestorePrompt = computed(() => pendingRestore.value !== null)
@@ -50,26 +66,14 @@ export const useDraftsStore = defineStore('drafts', () => {
     }
 
     if (!isDraftMeaningful(draft.value)) {
+      persist.cancel()
       clearDraftStorage()
       isSaving.value = false
       return
     }
 
-    if (saveTimer !== null) {
-      clearTimeout(saveTimer)
-    }
-
     isSaving.value = true
-    saveTimer = setTimeout(() => {
-      if (draft.value && isDraftMeaningful(draft.value)) {
-        saveDraftToStorage(draft.value)
-      }
-      else {
-        clearDraftStorage()
-      }
-      saveTimer = null
-      isSaving.value = false
-    }, DRAFT_SAVE_DEBOUNCE_MS)
+    persist()
   }
 
   /** Немедленно сохраняет черновик, сбрасывая debounce. */
@@ -78,10 +82,7 @@ export const useDraftsStore = defineStore('drafts', () => {
       return
     }
 
-    if (saveTimer !== null) {
-      clearTimeout(saveTimer)
-      saveTimer = null
-    }
+    persist.cancel()
 
     if (draft.value && isDraftMeaningful(draft.value)) {
       saveDraftToStorage(draft.value)
@@ -146,11 +147,7 @@ export const useDraftsStore = defineStore('drafts', () => {
 
   /** Удаляет активный черновик и очищает localStorage. */
   function clearDraft(): void {
-    if (saveTimer !== null) {
-      clearTimeout(saveTimer)
-      saveTimer = null
-    }
-
+    persist.cancel()
     draft.value = null
     isSaving.value = false
     clearDraftStorage()

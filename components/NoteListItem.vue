@@ -90,6 +90,9 @@ const hiddenTodosCount = computed(() =>
   flex-direction: column;
   gap: $spacing-md;
   padding: $spacing-lg;
+  /* Браузер пропускает layout/paint вне viewport */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 148px;
   transition:
     border-color $transition-fast,
     box-shadow $transition-fast,

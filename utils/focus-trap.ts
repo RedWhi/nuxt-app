@@ -1,3 +1,8 @@
+/**
+ * Focus-trap для модалок: Tab циклически внутри контейнера.
+ * Escape обрабатывается в AppModal (глобальный document keydown).
+ */
+
 /** Селектор элементов, которые можно сфокусировать с клавиатуры. */
 export const FOCUSABLE_SELECTOR = [
   'a[href]',
