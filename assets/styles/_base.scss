@@ -1,0 +1,84 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+
+  @media (prefers-reduced-motion: reduce) {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: $font-body;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: $color-ink;
+  background-color: $color-bg;
+  background-image:
+    radial-gradient(ellipse 120% 80% at 0% -20%, rgb(31 138 112 / 14%), transparent 55%),
+    radial-gradient(ellipse 90% 60% at 100% 0%, rgb(20 36 31 / 6%), transparent 50%),
+    linear-gradient(180deg, #f5f8f6 0%, $color-bg 42%, #e8efeb 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: $color-primary-dark;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  @include focus-ring;
+}
+
+::selection {
+  background: $color-primary-soft;
+  color: $color-ink;
+}
+
+h1,
+h2,
+h3 {
+  font-family: $font-display;
+  font-weight: 650;
+  line-height: 1.2;
+  color: $color-ink;
+}
+
+p {
+  margin: 0;
+}

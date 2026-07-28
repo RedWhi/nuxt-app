@@ -1,11 +1,47 @@
-$color-primary: #00dc82;
-$color-primary-dark: #00b368;
-$color-text-muted: #64748b;
-$color-border: #e2e8f0;
+// Breakpoints (mobile-first)
+$breakpoint-sm: 480px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
 
-$spacing-sm: 0.5rem;
-$spacing-md: 1rem;
-$spacing-lg: 1.5rem;
-$spacing-xl: 2rem;
+// SCSS-алиасы → CSS-переменные (темизация без переписывания компонентов)
+$color-bg: var(--color-bg);
+$color-bg-elevated: var(--color-bg-elevated);
+$color-bg-muted: var(--color-bg-muted);
+$color-ink: var(--color-ink);
+$color-ink-soft: var(--color-ink-soft);
+$color-text-muted: var(--color-text-muted);
+$color-primary: var(--color-primary);
+$color-primary-dark: var(--color-primary-hover);
+$color-primary-soft: var(--color-primary-soft);
+$color-border: var(--color-border);
+$color-border-strong: var(--color-border-strong);
+$color-danger: var(--color-danger);
+$color-danger-soft: var(--color-danger-soft);
+$color-overlay: var(--color-overlay);
+$color-focus-ring: var(--color-focus-ring);
 
-$radius-md: 0.5rem;
+$font-display: var(--font-display);
+$font-body: var(--font-body);
+
+$spacing-2xs: var(--space-2xs);
+$spacing-xs: var(--space-xs);
+$spacing-sm: var(--space-sm);
+$spacing-md: var(--space-md);
+$spacing-lg: var(--space-lg);
+$spacing-xl: var(--space-xl);
+$spacing-2xl: var(--space-2xl);
+
+$radius-sm: var(--radius-sm);
+$radius-md: var(--radius-md);
+$radius-lg: var(--radius-lg);
+
+$shadow-sm: var(--shadow-sm);
+$shadow-md: var(--shadow-md);
+$shadow-lg: var(--shadow-lg);
+
+$layout-max: var(--layout-max);
+$transition-fast: var(--transition-fast);
+$transition-base: var(--transition-base);
+
+$z-banner: var(--z-banner);
+$z-modal: var(--z-modal);

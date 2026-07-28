@@ -69,65 +69,69 @@ function discard(): void {
 
 <style lang="scss" scoped>
 .draft-restore {
+  position: sticky;
+  top: 0;
+  z-index: $z-banner;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: $spacing-md;
-  padding: $spacing-md $spacing-lg;
-  background-color: #fff;
+  padding: $spacing-md;
+  padding-top: max($spacing-md, env(safe-area-inset-top));
+  background: $color-bg-elevated;
   border-bottom: 1px solid $color-border;
-  box-shadow: 0 4px 12px rgb(15 23 42 / 6%);
+  box-shadow: $shadow-md;
+
+  @include respond-up(sm) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: $spacing-lg;
+  }
 
   &__title {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+    font-family: $font-display;
+    font-weight: 650;
+    margin-bottom: 0.2rem;
+    color: $color-ink;
   }
 
   &__desc {
     color: $color-text-muted;
     font-size: 0.95rem;
+    line-height: 1.45;
   }
 
   &__preview {
-    color: #1e293b;
-    font-weight: 500;
+    color: $color-ink;
+    font-weight: 600;
   }
 
   &__actions {
     display: flex;
+    flex-direction: column;
     gap: $spacing-sm;
-    flex-shrink: 0;
+    width: 100%;
+
+    @include respond-up(sm) {
+      flex-direction: row;
+      width: auto;
+      flex-shrink: 0;
+    }
   }
 
   &__button {
-    padding: $spacing-sm $spacing-md;
-    border-radius: $radius-md;
-    border: 1px solid transparent;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease;
+    width: 100%;
+
+    @include respond-up(sm) {
+      width: auto;
+    }
 
     &--ghost {
-      background: transparent;
-      border-color: $color-border;
-      color: $color-text-muted;
-
-      &:hover {
-        border-color: #cbd5e1;
-        color: #1e293b;
-      }
+      @include button-ghost;
     }
 
     &--primary {
-      background-color: $color-primary;
-      color: #fff;
-
-      &:hover {
-        background-color: $color-primary-dark;
-      }
+      @include button-primary;
     }
   }
 }

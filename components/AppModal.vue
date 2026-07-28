@@ -150,29 +150,41 @@ onUnmounted(() => {
 .modal {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: $z-modal;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   padding: $spacing-md;
+  padding-bottom: max($spacing-md, env(safe-area-inset-bottom));
+
+  @include respond-up(sm) {
+    align-items: center;
+  }
 
   &__overlay {
     position: absolute;
     inset: 0;
-    background: rgb(15 23 42 / 45%);
+    background: $color-overlay;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
   }
 
   &__dialog {
     position: relative;
     z-index: 1;
-    width: min(480px, 100%);
-    max-height: min(90vh, 720px);
+    width: min(28rem, 100%);
+    max-height: min(90vh, 40rem);
     overflow: auto;
-    background: #fff;
-    border-radius: $radius-md;
+    -webkit-overflow-scrolling: touch;
+    background: $color-bg-elevated;
+    border-radius: $radius-lg $radius-lg $radius-md $radius-md;
     border: 1px solid $color-border;
-    box-shadow: 0 16px 40px rgb(15 23 42 / 18%);
+    box-shadow: $shadow-lg;
     outline: none;
+
+    @include respond-up(sm) {
+      border-radius: $radius-lg;
+    }
   }
 
   &__header {
@@ -185,15 +197,16 @@ onUnmounted(() => {
 
   &__title {
     margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1e293b;
+    font-family: $font-display;
+    font-size: 1.3rem;
+    font-weight: 650;
+    color: $color-ink;
   }
 
   &__close {
     flex-shrink: 0;
-    width: 2rem;
-    height: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border: none;
     border-radius: $radius-md;
     background: transparent;
@@ -201,34 +214,52 @@ onUnmounted(() => {
     font-size: 1.5rem;
     line-height: 1;
     cursor: pointer;
+    transition: background-color $transition-fast, color $transition-fast;
 
     &:hover,
     &:focus-visible {
-      background: #f1f5f9;
-      color: #1e293b;
+      background: $color-bg-muted;
+      color: $color-ink;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
     }
   }
 
   &__body {
     padding: $spacing-sm $spacing-lg $spacing-lg;
-    color: #334155;
-    line-height: 1.5;
+    color: $color-ink-soft;
+    line-height: 1.55;
   }
 
   &__footer {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column-reverse;
     gap: $spacing-sm;
     padding: 0 $spacing-lg $spacing-lg;
+
+    @include respond-up(sm) {
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+
+    :deep(button) {
+      width: 100%;
+
+      @include respond-up(sm) {
+        width: auto;
+      }
+    }
   }
 }
 
 .modal-enter-active,
 .modal-leave-active {
-  transition: opacity 0.18s ease;
+  transition: opacity $transition-base;
 
   .modal__dialog {
-    transition: transform 0.18s ease, opacity 0.18s ease;
+    transition: transform $transition-base, opacity $transition-base;
   }
 }
 
@@ -238,7 +269,20 @@ onUnmounted(() => {
 
   .modal__dialog {
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(12px);
+
+    @include respond-up(sm) {
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-enter-active,
+  .modal-leave-active,
+  .modal-enter-active .modal__dialog,
+  .modal-leave-active .modal__dialog {
+    transition: none;
   }
 }
 </style>

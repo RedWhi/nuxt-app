@@ -72,17 +72,17 @@ function goBack(): void {
 
 <style lang="scss" scoped>
 .error-page {
-  flex: 1;
-  width: min(560px, 100%);
-  margin: 0 auto;
-  padding: $spacing-xl $spacing-md;
+  @include page-shell;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-height: 70vh;
+  animation: error-enter 0.3s ease both;
 
   &__code {
     margin: 0;
-    font-size: 3.5rem;
+    font-family: $font-display;
+    font-size: clamp(3rem, 14vw, 4.5rem);
     font-weight: 700;
     line-height: 1;
     color: $color-primary;
@@ -90,48 +90,60 @@ function goBack(): void {
 
   &__title {
     margin: $spacing-md 0 $spacing-sm;
-    font-size: 1.75rem;
-    color: #1e293b;
+    font-family: $font-display;
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    color: $color-ink;
   }
 
   &__text {
     margin: 0 0 $spacing-xl;
     color: $color-text-muted;
-    line-height: 1.5;
+    line-height: 1.55;
+    max-width: 36rem;
   }
 
   &__actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: $spacing-sm;
+
+    @include respond-up(sm) {
+      flex-direction: row;
+    }
   }
 
   &__button {
-    padding: $spacing-sm $spacing-md;
-    border-radius: $radius-md;
-    border: 1px solid transparent;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
+    width: 100%;
+
+    @include respond-up(sm) {
+      width: auto;
+    }
 
     &--primary {
-      background-color: $color-primary;
-      color: #fff;
-
-      &:hover {
-        background-color: $color-primary-dark;
-      }
+      @include button-primary;
     }
 
     &--ghost {
-      background: transparent;
-      border-color: $color-border;
-      color: $color-text-muted;
-
-      &:hover {
-        color: #1e293b;
-      }
+      @include button-ghost;
     }
+  }
+}
+
+@keyframes error-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-page {
+    animation: none;
   }
 }
 </style>

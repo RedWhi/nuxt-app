@@ -1,0 +1,160 @@
+@use 'variables' as *;
+
+/// Mobile-first media query
+@mixin respond-up($breakpoint) {
+  @if $breakpoint == sm {
+    @media (min-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == md {
+    @media (min-width: $breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == lg {
+    @media (min-width: $breakpoint-lg) {
+      @content;
+    }
+  }
+}
+
+@mixin focus-ring($offset: 2px) {
+  outline: 2px solid $color-focus-ring;
+  outline-offset: $offset;
+}
+
+@mixin tap-target {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+}
+
+@mixin surface {
+  background: $color-bg-elevated;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: 0.65rem 1.1rem;
+  border: 1px solid transparent;
+  border-radius: $radius-md;
+  font-family: $font-body;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color $transition-fast,
+    border-color $transition-fast,
+    color $transition-fast,
+    transform $transition-fast,
+    box-shadow $transition-fast;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background: $color-primary;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: $color-primary-dark;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+}
+
+@mixin button-ghost {
+  @include button-base;
+  background: transparent;
+  border-color: $color-border;
+  color: $color-ink-soft;
+
+  &:hover:not(:disabled) {
+    border-color: $color-border-strong;
+    color: $color-ink;
+    background: $color-bg-muted;
+  }
+}
+
+@mixin button-danger {
+  @include button-base;
+  background: transparent;
+  border-color: $color-danger-soft;
+  color: $color-danger;
+
+  &:hover:not(:disabled) {
+    background: $color-danger-soft;
+  }
+}
+
+@mixin field-base {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $color-bg-elevated;
+  color: $color-ink;
+  font-family: $font-body;
+  font-size: 1rem;
+  line-height: 1.4;
+  transition:
+    border-color $transition-fast,
+    box-shadow $transition-fast;
+  // iOS zoom prevention below 16px — держим ≥16px на мобиле
+  appearance: none;
+  -webkit-appearance: none;
+
+  &::placeholder {
+    color: $color-text-muted;
+    opacity: 1;
+  }
+
+  &:hover {
+    border-color: $color-border-strong;
+  }
+
+  &:focus {
+    border-color: $color-primary;
+    outline: none;
+    box-shadow: 0 0 0 3px $color-primary-soft;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@mixin page-shell {
+  flex: 1;
+  width: min(#{$layout-max}, 100%);
+  margin-inline: auto;
+  padding: $spacing-lg $spacing-md $spacing-2xl;
+
+  @include respond-up(md) {
+    padding: $spacing-2xl $spacing-xl $spacing-2xl;
+  }
+}

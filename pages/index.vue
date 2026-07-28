@@ -52,7 +52,10 @@ async function createNote(): Promise<void> {
     index: notesStore.notes.length,
   })
 
-  await navigateTo(`/edit/${note.id}`)
+  await navigateTo({
+    path: `/edit/${note.id}`,
+    query: { new: '1' },
+  })
 }
 
 async function editNote(id: string): Promise<void> {
@@ -98,7 +101,10 @@ function cancelDelete(): void {
 <template>
   <main class="notes">
     <header class="notes__header">
-      <div>
+      <div class="notes__brand">
+        <p class="notes__eyebrow">
+          Личное пространство
+        </p>
         <h1 class="notes__title">
           Заметки
         </h1>
@@ -164,75 +170,108 @@ function cancelDelete(): void {
 
 <style lang="scss" scoped>
 .notes {
-  flex: 1;
-  width: min(720px, 100%);
-  margin: 0 auto;
-  padding: $spacing-xl $spacing-md;
+  @include page-shell;
+  animation: notes-enter 0.35s ease both;
 
   &__header {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: stretch;
     gap: $spacing-md;
     margin-bottom: $spacing-xl;
+
+    @include respond-up(sm) {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+  }
+
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2xs;
+  }
+
+  &__eyebrow {
+    margin: 0;
+    font-family: $font-body;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $color-primary-dark;
   }
 
   &__title {
     margin: 0;
-    font-size: 2rem;
+    font-family: $font-display;
+    font-size: clamp(2.25rem, 8vw, 3.25rem);
     font-weight: 700;
-    color: #1e293b;
+    letter-spacing: -0.02em;
+    color: $color-ink;
   }
 
   &__subtitle {
-    margin: 0.25rem 0 0;
+    margin: 0.15rem 0 0;
     color: $color-text-muted;
+    font-size: 0.95rem;
   }
 
   &__create {
-    padding: $spacing-sm $spacing-lg;
-    border: none;
-    border-radius: $radius-md;
-    background-color: $color-primary;
-    color: #fff;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+    @include button-primary;
+    width: 100%;
 
-    &:hover {
-      background-color: $color-primary-dark;
-    }
-
-    &:focus-visible {
-      outline: 2px solid rgba($color-primary, 0.45);
-      outline-offset: 2px;
+    @include respond-up(sm) {
+      width: auto;
+      flex-shrink: 0;
     }
   }
 
   &__list {
-    border-top: 1px solid $color-border;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
   }
 
   &__empty {
+    @include surface;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: $spacing-sm;
-    padding: $spacing-xl 0;
+    padding: $spacing-xl $spacing-lg;
   }
 
   &__empty-title {
     margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1e293b;
+    font-family: $font-display;
+    font-size: 1.35rem;
+    font-weight: 650;
+    color: $color-ink;
   }
 
   &__empty-text {
     margin: 0 0 $spacing-md;
     color: $color-text-muted;
+  }
+}
+
+@keyframes notes-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notes {
+    animation: none;
   }
 }
 </style>

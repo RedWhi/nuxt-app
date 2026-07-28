@@ -284,33 +284,32 @@ function onTodoTextBlur(todo: TodoItem, event: Event): void {
   }
 
   &__item {
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'check text'
+      'check remove';
     gap: $spacing-sm;
+    align-items: center;
+
+    @include respond-up(sm) {
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas: 'check text remove';
+    }
   }
 
   &__checkbox {
-    width: 1.1rem;
-    height: 1.1rem;
-    flex-shrink: 0;
-    accent-color: $color-primary-dark;
+    grid-area: check;
+    width: 1.15rem;
+    height: 1.15rem;
+    accent-color: $color-primary;
     cursor: pointer;
   }
 
   &__text {
-    flex: 1;
-    min-width: 0;
-    padding: $spacing-sm $spacing-md;
-    border: 1px solid $color-border;
-    border-radius: $radius-md;
-    font: inherit;
-    color: #1e293b;
-    background: #fff;
-
-    &:focus {
-      outline: 2px solid rgba($color-primary, 0.35);
-      border-color: $color-primary;
-    }
+    @include field-base;
+    grid-area: text;
+    padding: 0.55rem 0.75rem;
 
     &--done {
       color: $color-text-muted;
@@ -318,23 +317,19 @@ function onTodoTextBlur(todo: TodoItem, event: Event): void {
     }
 
     &--invalid {
-      border-color: #f87171;
+      border-color: $color-danger;
     }
   }
 
   &__remove {
-    flex-shrink: 0;
-    padding: $spacing-sm $spacing-md;
-    border: 1px solid #fecaca;
-    border-radius: $radius-md;
-    background: transparent;
-    color: #b91c1c;
-    font: inherit;
-    font-size: 0.9rem;
-    cursor: pointer;
+    @include button-danger;
+    grid-area: remove;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.85rem;
+    justify-self: start;
 
-    &:hover {
-      background: #fef2f2;
+    @include respond-up(sm) {
+      justify-self: end;
     }
   }
 
@@ -347,54 +342,40 @@ function onTodoTextBlur(todo: TodoItem, event: Event): void {
   &__add {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.35rem;
   }
 
   &__add-fields {
     display: flex;
+    flex-direction: column;
     gap: $spacing-sm;
+
+    @include respond-up(sm) {
+      flex-direction: row;
+    }
   }
 
   &__new-input {
-    flex: 1;
-    padding: $spacing-sm $spacing-md;
-    border: 1px solid $color-border;
-    border-radius: $radius-md;
-    font: inherit;
-
-    &:focus {
-      outline: 2px solid rgba($color-primary, 0.35);
-      border-color: $color-primary;
-    }
+    @include field-base;
 
     &--invalid {
-      border-color: #f87171;
+      border-color: $color-danger;
     }
   }
 
   &__add-button {
-    padding: $spacing-sm $spacing-md;
-    border: none;
-    border-radius: $radius-md;
-    background-color: $color-primary;
-    color: #fff;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
+    @include button-primary;
+    width: 100%;
 
-    &:hover:not(:disabled) {
-      background-color: $color-primary-dark;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    @include respond-up(sm) {
+      width: auto;
+      flex-shrink: 0;
     }
   }
 
   &__error {
     margin: 0;
-    color: #b91c1c;
+    color: $color-danger;
     font-size: 0.85rem;
   }
 }

@@ -85,24 +85,40 @@ const hiddenTodosCount = computed(() =>
 
 <style lang="scss" scoped>
 .note-item {
+  @include surface;
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
+  flex-direction: column;
   gap: $spacing-md;
-  padding: $spacing-lg 0;
-  border-bottom: 1px solid $color-border;
+  padding: $spacing-lg;
+  transition:
+    border-color $transition-fast,
+    box-shadow $transition-fast,
+    transform $transition-fast;
+
+  @include respond-up(sm) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      border-color: $color-border-strong;
+      box-shadow: $shadow-md;
+    }
+  }
 
   &__main {
     flex: 1;
-    min-width: min(100%, 240px);
+    min-width: 0;
   }
 
   &__title {
     margin: 0 0 $spacing-sm;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1e293b;
+    font-family: $font-display;
+    font-size: 1.3rem;
+    font-weight: 650;
+    color: $color-ink;
   }
 
   &__todos {
@@ -111,15 +127,16 @@ const hiddenTodosCount = computed(() =>
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.4rem;
   }
 
   &__todo {
     display: flex;
     align-items: flex-start;
     gap: $spacing-sm;
-    color: #334155;
+    color: $color-ink-soft;
     line-height: 1.4;
+    font-size: 0.95rem;
 
     &--done {
       color: $color-text-muted;
@@ -134,7 +151,7 @@ const hiddenTodosCount = computed(() =>
     flex-shrink: 0;
     width: 1rem;
     text-align: center;
-    color: $color-text-muted;
+    color: $color-primary;
   }
 
   &__empty,
@@ -148,46 +165,37 @@ const hiddenTodosCount = computed(() =>
     display: flex;
     flex-wrap: wrap;
     gap: $spacing-sm;
+    width: 100%;
+
+    @include respond-up(sm) {
+      width: auto;
+      flex-shrink: 0;
+      flex-direction: column;
+    }
   }
 
   &__button {
-    padding: $spacing-sm $spacing-md;
-    border-radius: $radius-md;
-    border: 1px solid transparent;
-    font: inherit;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease;
+    flex: 1;
 
-    &:focus-visible {
-      outline: 2px solid rgba($color-primary, 0.45);
-      outline-offset: 2px;
+    @include respond-up(sm) {
+      flex: initial;
     }
 
     &--ghost {
-      background: transparent;
-      border-color: $color-border;
-      color: #334155;
-
-      &:hover {
-        border-color: $color-primary;
-        color: $color-primary-dark;
-      }
+      @include button-ghost;
+      width: 100%;
     }
 
     &--danger {
-      background: transparent;
-      border-color: #fecaca;
-      color: #b91c1c;
-
-      &:hover {
-        background: #fef2f2;
-        border-color: #f87171;
-      }
+      @include button-danger;
+      width: 100%;
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note-item {
+    transition: none;
   }
 }
 </style>

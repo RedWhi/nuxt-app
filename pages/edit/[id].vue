@@ -23,6 +23,9 @@ const noteId = computed(() => {
   return typeof id === 'string' ? id : Array.isArray(id) ? id[0] ?? null : null
 })
 
+/** Новая заметка из «Создать» — при отмене удаляем, а не откатываем. */
+const isNewNote = computed(() => route.query.new === '1')
+
 const note = computed(() =>
   noteId.value ? notesStore.getNote(noteId.value) : undefined,
 )
@@ -264,15 +267,41 @@ function requestCancel(): void {
   commitTitle()
   commitContent()
 
-  if (!isDirty.value) {
-    void leaveWithoutSaving()
+  // Новую заметку при отмене всегда убираем (даже без правок).
+  if (isNewNote.value || isDirty.value) {
+    isCancelOpen.value = true
     return
   }
 
-  isCancelOpen.value = true
+  void leaveWithoutSaving()
+}
+
+async function discardNewNote(): Promise<void> {
+  if (!note.value || !noteId.value) {
+    draftsStore.clearDraft()
+    await navigateTo('/')
+    return
+  }
+
+  const index = notesStore.notes.findIndex(item => item.id === noteId.value)
+  if (index !== -1) {
+    commit({
+      type: 'note:delete',
+      note: cloneNote(note.value),
+      index,
+    })
+  }
+
+  draftsStore.clearDraft()
+  await navigateTo('/')
 }
 
 async function leaveWithoutSaving(): Promise<void> {
+  if (isNewNote.value) {
+    await discardNewNote()
+    return
+  }
+
   if (baseline.value && noteId.value && note.value) {
     const current = note.value
     const original = baseline.value
@@ -458,9 +487,11 @@ function onBackClick(event: MouseEvent): void {
 
     <ConfirmDialog
       v-model:open="isCancelOpen"
-      title="Отменить изменения?"
-      message="Изменения с момента открытия будут сброшены. Продолжить?"
-      confirm-label="Сбросить"
+      :title="isNewNote ? 'Отменить создание?' : 'Отменить изменения?'"
+      :message="isNewNote
+        ? 'Новая заметка будет удалена. Продолжить?'
+        : 'Изменения с момента открытия будут сброшены. Продолжить?'"
+      :confirm-label="isNewNote ? 'Удалить черновик' : 'Сбросить'"
       cancel-label="Продолжить редактирование"
       variant="danger"
       @confirm="leaveWithoutSaving"
@@ -504,18 +535,21 @@ function onBackClick(event: MouseEvent): void {
 
 <style lang="scss" scoped>
 .edit {
-  flex: 1;
-  width: min(720px, 100%);
-  margin: 0 auto;
-  padding: $spacing-xl $spacing-md;
+  @include page-shell;
+  animation: edit-enter 0.3s ease both;
 
   &__header {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: stretch;
     gap: $spacing-md;
     margin-bottom: $spacing-xl;
+
+    @include respond-up(sm) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
   }
 
   &__back {
@@ -523,6 +557,7 @@ function onBackClick(event: MouseEvent): void {
     text-decoration: none;
     font-weight: 600;
     cursor: pointer;
+    width: fit-content;
 
     &:hover {
       text-decoration: underline;
@@ -535,23 +570,13 @@ function onBackClick(event: MouseEvent): void {
   }
 
   &__tool {
-    padding: 0.35rem 0.7rem;
-    border: 1px solid $color-border;
-    border-radius: $radius-md;
-    background: #fff;
-    color: $color-text-muted;
-    font: inherit;
+    @include button-ghost;
+    padding: 0.45rem 0.8rem;
     font-size: 0.85rem;
-    cursor: pointer;
+    flex: 1;
 
-    &:hover:not(:disabled) {
-      border-color: $color-primary;
-      color: $color-primary-dark;
-    }
-
-    &:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
+    @include respond-up(sm) {
+      flex: initial;
     }
   }
 
@@ -560,18 +585,27 @@ function onBackClick(event: MouseEvent): void {
   }
 
   &__form {
+    @include surface;
     display: flex;
     flex-direction: column;
     gap: $spacing-sm;
+    padding: $spacing-lg;
+
+    @include respond-up(md) {
+      padding: $spacing-xl;
+    }
   }
 
   &__label {
     font-weight: 600;
     margin-top: $spacing-md;
+    color: $color-ink;
 
     &--inline {
       margin-top: 0;
-      font-size: 1rem;
+      font-family: $font-display;
+      font-size: 1.15rem;
+      font-weight: 650;
     }
   }
 
@@ -595,81 +629,78 @@ function onBackClick(event: MouseEvent): void {
 
   &__input,
   &__textarea {
-    width: 100%;
-    padding: $spacing-sm $spacing-md;
-    border: 1px solid $color-border;
-    border-radius: $radius-md;
-    font: inherit;
-    color: #1e293b;
-    background: #fff;
-
-    &:focus {
-      outline: 2px solid rgba($color-primary, 0.35);
-      border-color: $color-primary;
-    }
+    @include field-base;
   }
 
   &__textarea {
     resize: vertical;
-    line-height: 1.5;
+    min-height: 8rem;
+    line-height: 1.55;
   }
 
   &__actions {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column-reverse;
     gap: $spacing-md;
     margin-top: $spacing-xl;
+
+    @include respond-up(sm) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
   }
 
   &__actions-right {
     display: flex;
+    flex-direction: column;
     gap: $spacing-sm;
-    margin-left: auto;
+    width: 100%;
+
+    @include respond-up(sm) {
+      flex-direction: row;
+      width: auto;
+      margin-left: auto;
+    }
   }
 
   &__button {
-    padding: $spacing-sm $spacing-md;
-    border-radius: $radius-md;
-    border: 1px solid transparent;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease;
+    width: 100%;
+
+    @include respond-up(sm) {
+      width: auto;
+    }
 
     &--primary {
-      background-color: $color-primary;
-      color: #fff;
-
-      &:hover {
-        background-color: $color-primary-dark;
-      }
+      @include button-primary;
     }
 
     &--ghost {
-      background: transparent;
-      border-color: $color-border;
-      color: $color-text-muted;
-
-      &:hover {
-        color: #1e293b;
-        border-color: #cbd5e1;
-      }
+      @include button-ghost;
     }
 
     &--danger {
-      background: transparent;
-      border-color: #fecaca;
-      color: #b91c1c;
-
-      &:hover {
-        background: #fef2f2;
-      }
+      @include button-danger;
     }
+  }
+}
+
+@keyframes edit-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edit {
+    animation: none;
   }
 }
 </style>

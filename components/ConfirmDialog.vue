@@ -92,50 +92,27 @@ function onCancel(): void {
   &__message {
     margin: 0;
     color: $color-text-muted;
+    line-height: 1.55;
   }
 
   &__button {
-    padding: $spacing-sm $spacing-md;
-    border-radius: $radius-md;
-    border: 1px solid transparent;
-    font: inherit;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease;
-
-    &:focus-visible {
-      outline: 2px solid rgba($color-primary, 0.45);
-      outline-offset: 2px;
-    }
+    width: 100%;
 
     &--ghost {
-      background: transparent;
-      border-color: $color-border;
-      color: $color-text-muted;
-
-      &:hover {
-        border-color: #cbd5e1;
-        color: #1e293b;
-      }
+      @include button-ghost;
     }
 
     &--primary {
-      background-color: $color-primary;
-      color: #fff;
-
-      &:hover {
-        background-color: $color-primary-dark;
-      }
+      @include button-primary;
     }
 
     &--danger {
-      background-color: #dc2626;
+      @include button-base;
+      background: $color-danger;
       color: #fff;
 
-      &:hover {
-        background-color: #b91c1c;
+      &:hover:not(:disabled) {
+        filter: brightness(0.92);
       }
     }
   }
