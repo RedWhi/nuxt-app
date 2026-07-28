@@ -1,13 +1,10 @@
 <script setup lang="ts">
-const counterStore = useCounterStore()
 </script>
 
 <template>
   <div class="app">
+    <DraftRestorePrompt />
     <NuxtPage />
-    <footer class="app__footer">
-      <p>Pinia counter: {{ counterStore.count }}</p>
-    </footer>
   </div>
 </template>
 
@@ -16,13 +13,5 @@ const counterStore = useCounterStore()
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
-  &__footer {
-    margin-top: auto;
-    padding: $spacing-md;
-    text-align: center;
-    color: $color-text-muted;
-    border-top: 1px solid $color-border;
-  }
 }
 </style>
