@@ -1,24 +1,25 @@
 :root {
-  /* Palette — sage / ink (светлая тема по умолчанию) */
-  --color-bg: #eef3f0;
+  /* Palette — Nebus finance (vacancies): cool cyan / slate
+     Ref: https://nebusfinance.ru/vacancies */
+  --color-bg: #f0f6f7;
   --color-bg-elevated: #ffffff;
-  --color-bg-muted: #e4ebe7;
-  --color-ink: #14241f;
-  --color-ink-soft: #3d544c;
-  --color-text-muted: #6a8077;
-  --color-primary: #1f8a70;
-  --color-primary-hover: #176b57;
-  --color-primary-soft: rgb(31 138 112 / 22%);
-  --color-border: #cfdcd6;
-  --color-border-strong: #aebfb7;
-  --color-danger: #b42318;
-  --color-danger-soft: #fce8e6;
-  --color-overlay: rgb(16 32 27 / 48%);
-  --color-focus-ring: rgb(31 138 112 / 55%);
+  --color-bg-muted: #e8eef3;
+  --color-ink: #1a2d3d;
+  --color-ink-soft: #3d4d5c;
+  --color-text-muted: #849aae;
+  --color-primary: #019ddc;
+  --color-primary-hover: #0179b0;
+  --color-primary-soft: rgb(1 157 220 / 18%);
+  --color-border: #dce5ec;
+  --color-border-strong: #c5d3de;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fef2f2;
+  --color-overlay: rgb(26 45 61 / 45%);
+  --color-focus-ring: rgb(1 157 220 / 55%);
 
-  /* Typography */
-  --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Palatino, serif;
-  --font-body: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  /* Typography — как на nebusfinance.ru */
+  --font-display: 'Commissioner', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Commissioner', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* Spacing */
   --space-2xs: 0.25rem;
@@ -29,41 +30,40 @@
   --space-xl: 2rem;
   --space-2xl: 3rem;
 
-  /* Radii */
+  /* Radii — --radius .625rem + карточки ~1rem */
   --radius-sm: 0.375rem;
   --radius-md: 0.625rem;
   --radius-lg: 1rem;
 
   /* Elevation */
-  --shadow-sm: 0 1px 2px rgb(20 36 31 / 5%);
-  --shadow-md: 0 8px 24px rgb(20 36 31 / 8%);
-  --shadow-lg: 0 18px 48px rgb(20 36 31 / 14%);
+  --shadow-sm: 0 1px 2px rgb(26 45 61 / 4%);
+  --shadow-md: 0 10px 28px rgb(1 157 220 / 8%), 0 4px 12px rgb(26 45 61 / 4%);
+  --shadow-lg: 0 20px 48px rgb(1 157 220 / 12%), 0 8px 20px rgb(26 45 61 / 6%);
 
   /* Layout / motion */
-  --layout-max: 44rem;
-  --transition-fast: 0.15s ease;
-  --transition-base: 0.22s ease;
+  --layout-max: 48rem;
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --z-banner: 50;
   --z-modal: 1000;
 
   color-scheme: light;
 }
 
-/* Пример альтернативной темы — переключается через data-theme */
 [data-theme='contrast'] {
-  --color-bg: #f7faf8;
+  --color-bg: #e8f4f8;
   --color-bg-elevated: #ffffff;
-  --color-bg-muted: #e8efeb;
-  --color-ink: #0b1612;
-  --color-ink-soft: #24362f;
-  --color-text-muted: #4d635a;
-  --color-primary: #0f6b55;
-  --color-primary-hover: #0a4f3f;
-  --color-primary-soft: rgb(15 107 85 / 28%);
-  --color-border: #b7c8c0;
-  --color-border-strong: #8fa59b;
-  --color-danger: #9f1239;
-  --color-danger-soft: #ffe4e6;
-  --color-overlay: rgb(8 18 14 / 55%);
-  --color-focus-ring: rgb(15 107 85 / 65%);
+  --color-bg-muted: #d7e8f0;
+  --color-ink: #0b1a26;
+  --color-ink-soft: #24384a;
+  --color-text-muted: #556c82;
+  --color-primary: #0180b8;
+  --color-primary-hover: #015f8a;
+  --color-primary-soft: rgb(1 128 184 / 24%);
+  --color-border: #b8cdd9;
+  --color-border-strong: #8fadc0;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fee2e2;
+  --color-overlay: rgb(8 20 30 / 55%);
+  --color-focus-ring: rgb(1 128 184 / 65%);
 }

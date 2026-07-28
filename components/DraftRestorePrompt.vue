@@ -90,7 +90,7 @@ function discard(): void {
 
   &__title {
     font-family: $font-display;
-    font-weight: 650;
+    font-weight: 700;
     margin-bottom: 0.2rem;
     color: $color-ink;
   }

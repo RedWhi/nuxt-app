@@ -23,13 +23,14 @@ body {
   min-height: 100dvh;
   font-family: $font-body;
   font-size: 1rem;
-  line-height: 1.6;
-  color: $color-ink;
+  line-height: 1.5;
+  color: $color-ink-soft;
+  /* Фон как у Nebus: холодный #f0f6f7 + мягкий cyan glow */
   background-color: $color-bg;
   background-image:
-    radial-gradient(ellipse 120% 80% at 0% -20%, rgb(31 138 112 / 14%), transparent 55%),
-    radial-gradient(ellipse 90% 60% at 100% 0%, rgb(20 36 31 / 6%), transparent 50%),
-    linear-gradient(180deg, #f5f8f6 0%, $color-bg 42%, #e8efeb 100%);
+    radial-gradient(ellipse 110% 70% at 8% -10%, rgb(1 157 220 / 12%), transparent 52%),
+    radial-gradient(ellipse 80% 50% at 96% 0%, rgb(132 154 174 / 12%), transparent 48%),
+    linear-gradient(180deg, #f7fbfc 0%, $color-bg 40%, #e8f0f3 100%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -74,8 +75,9 @@ h1,
 h2,
 h3 {
   font-family: $font-display;
-  font-weight: 650;
+  font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.025em;
   color: $color-ink;
 }
 

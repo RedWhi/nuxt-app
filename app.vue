@@ -28,9 +28,10 @@ const draftsStore = useDraftsStore()
     inset: 0;
     z-index: -1;
     background-image:
-      radial-gradient(circle at 12% 18%, rgb(255 255 255 / 55%) 0, transparent 28%),
-      radial-gradient(circle at 88% 12%, rgb(31 138 112 / 10%) 0, transparent 32%);
-    opacity: 0.9;
+      radial-gradient(circle at 12% 18%, rgb(255 255 255 / 70%) 0, transparent 28%),
+      radial-gradient(circle at 88% 12%, rgb(1 157 220 / 14%) 0, transparent 34%),
+      radial-gradient(circle at 50% 100%, rgb(132 154 174 / 10%) 0, transparent 40%);
+    opacity: 0.95;
   }
 
   &__content {

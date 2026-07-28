@@ -221,7 +221,7 @@ onUnmounted(() => {
     margin: 0;
     font-family: $font-display;
     font-size: 1.3rem;
-    font-weight: 650;
+    font-weight: 700;
     color: $color-ink;
   }
 

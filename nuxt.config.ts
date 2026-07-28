@@ -26,11 +26,11 @@ export default defineNuxtConfig({
         },
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,700&family=Outfit:wght@400;500;600;700&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700;800&display=swap',
         },
       ],
       meta: [
-        { name: 'theme-color', content: '#1f8a70' },
+        { name: 'theme-color', content: '#019ddc' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
       ],
     },

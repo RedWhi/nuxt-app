@@ -204,15 +204,15 @@ function cancelDelete(): void {
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: $color-primary-dark;
+    color: $color-primary;
   }
 
   &__title {
     margin: 0;
     font-family: $font-display;
     font-size: clamp(2.25rem, 8vw, 3.25rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     color: $color-ink;
   }
 
@@ -245,7 +245,7 @@ function cancelDelete(): void {
     margin: 0;
     font-family: $font-display;
     font-size: 1.35rem;
-    font-weight: 650;
+    font-weight: 700;
     color: $color-ink;
   }
 

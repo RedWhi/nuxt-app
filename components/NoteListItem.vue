@@ -106,8 +106,9 @@ const hiddenTodosCount = computed(() =>
 
   @media (hover: hover) {
     &:hover {
-      border-color: $color-border-strong;
+      border-color: color-mix(in srgb, #{$color-primary} 28%, #{$color-border});
       box-shadow: $shadow-md;
+      transform: translateY(-2px);
     }
   }
 
@@ -120,7 +121,7 @@ const hiddenTodosCount = computed(() =>
     margin: 0 0 $spacing-sm;
     font-family: $font-display;
     font-size: 1.3rem;
-    font-weight: 650;
+    font-weight: 700;
     color: $color-ink;
   }
 
